@@ -2,49 +2,87 @@ html,
 body {
     margin: 0;
     padding: 0;
-    height: 100%;
-    width: 100%;
+    background-color: rgba(237, 241, 242, 1);
+    font-family: 'Roboto', sans-serif;
 }
 
-#camera,
-#camera--view,
-#camera--sensor,
-#camera--output {
-    position: fixed;
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
-}
-
-#camera--view,
-#camera--sensor,
-#camera--output {
-    transform: scaleX(-1);
-    filter: FlipH;
-}
-
-#camera--trigger {
-    width: 200px;
-    background-color: black;
+#txt-head {
+    background-color: rgba(0, 42, 92, 1);
     color: white;
-    font-size: 16px;
-    border-radius: 30px;
-    border: none;
-    padding: 15px 20px;
-    text-align: center;
-    box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.2);
-    position: fixed;
-    bottom: 30px;
-    left: calc(50% - 100px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 64px;
+    margin: auto;
+    font-size: 22px;
+    font-weight: bold;
 }
 
-.taken {
-    height: 100px !important;
-    width: 100px !important;
-    transition: all 0.5s ease-in;
-    border: solid 3px white;
-    box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.2);
-    top: 20px;
-    right: 20px;
-    z-index: 2;
+#canvas-video {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 4px solid #DFDFDF;
+    width: fit-content;
+    height: fit-content;
+    margin: auto;
+}
+
+#canvas-plot {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#btn-record {
+    background-color: rgba(28, 153, 109, 1);
+    color: white;
+    width: 50%;
+    height: 4vh;
+    margin: auto;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+#form {
+    font-size: 16px;
+}
+
+/* CSS */
+button {
+    align-items: center;
+    border: 1px solid #DFDFDF;
+    border-radius: 16px;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    line-height: 28px;
+    padding: 14px 22px;
+    text-decoration: none;
+    transition: all .2s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    width: 100%;
+}
+
+button:active,
+button:hover {
+    outline: 0;
+}
+
+button:hover {
+    background-color: #FFFFFF;
+    border-color: rgba(0, 0, 0, 0.19);
+}
+
+@media (min-width: 768px) {
+    button {
+        font-size: 20px;
+        min-width: 200px;
+        padding: 14px 16px;
+    }
 }
