@@ -93,8 +93,8 @@ function plotData() {
         }];
     } else {
         var data = [{
-            x: footXY[0][0],
-            y: footXY[0][1],
+            x: footXY[1][0],
+            y: footXY[1][1],
             mode: "markers"
         }];
     }
@@ -148,10 +148,9 @@ function draw() {
         fill(255, 255, 0);
         //ellipse(vScaleX * pose.rightShoulder.x, vScaleY * pose.rightShoulder.y + vPad + vTop, szFoot);
         //ellipse(vScaleX * pose.leftShoulder.x, vScaleY * pose.leftShoulder.y + vPad + vTop, szFoot);
-
-        ellipse(vScaleX * pose.rightAnkle.x + hPad, vScaleY * pose.rightAnkle.y + vPad + vTop, szFoot);
+        ellipse(vScaleX * pose.leftAnkle.x + hPad, vScaleY * pose.leftAnkle.y + vPad + vTop, szFoot);
         fill(255, 0, 0);
-        ellipse(vScaleX * pose.leftAnkle.x + hPad, vScaleY * pose.leftAnkle.y + vPad + vTop, szBody);
+        ellipse(vScaleX * pose.rightAnkle.x + hPad, vScaleY * pose.rightAnkle.y + vPad + vTop, szBody);
         ellipse(vScaleX * pose.rightKnee.x + hPad, vScaleY * pose.rightKnee.y + vPad + vTop, szBody);
         ellipse(vScaleX * pose.leftKnee.x + hPad, vScaleY * pose.leftKnee.y + vPad + vTop, szBody);
         ellipse(vScaleX * pose.rightHip.x + hPad, vScaleY * pose.rightHip.y + vPad + vTop, szBody);
