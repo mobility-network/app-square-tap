@@ -1,24 +1,49 @@
 const btnRecord = document.getElementById("btn-record")
 const canvasVid = document.getElementById("canvas-video")
 const canvasPlot = document.getElementById("canvas-plot")
-const formPlot = document.getElementById("form")
-const szBody = 16;
-const szFoot = 32;
-const vidRes = [840, 1440];
-let canvas;
+const formPlot = document.getElementById("form-plot")
+let detector;
+let detectorConfig;
+let poses;
 let video;
-let video_null;
-let poseNet;
-let pose;
-let capture = false;
-let footXY = [[[], []], [[], []]];
-let time = [];
+let videoready = false;
+let skeleton = true;
+let model;
+let tracking = false;
 let frame = 0;
 let plotOption = "Position vs Time";
 
-//#region SETUP
-function setup() {
-    // Graphics
+async function init() {
+    const detectorConfig = {
+        modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,
+    };
+    detector = await poseDetection.createDetector(
+        poseDetection.SupportedModels.MoveNet,
+        detectorConfig
+    );
+    edges = {
+        '5,7': 'm',
+        '7,9': 'm',
+        '6,8': 'c',
+        '8,10': 'c',
+        '5,6': 'y',
+        '5,11': 'm',
+        '6,12': 'c',
+        '11,12': 'y',
+        '11,13': 'm',
+        '13,15': 'm',
+        '12,14': 'c',
+        '14,16': 'c'
+    };
+}
+
+async function videoReady() {
+    videoready = true;
+    console.log("video ready");
+    await getPoses();
+}
+
+async function setup() {
     var constraints = {
         audio: false,
         video: {
@@ -27,26 +52,26 @@ function setup() {
             }
         }
     }
-    canvas = createCanvas(vidRes[0], vidRes[1]);
+
+    canvas = createCanvas(640, 480);
     canvas.parent(canvasVid);
-    video = createCapture(VIDEO, constraints);
+    video = createCapture(constraints, videoReady);
+    video.size(640, 480);
     video.hide();
-    // Pose Model
-    poseNet = ml5.poseNet(video, "single", modelLoaded);
-    poseNet.on('pose', trackPoses);
-    // Plot
-    initPlot()
+
+    await init();
+    initPlot();
 }
 
-function modelLoaded() {
-    console.log('Pose Estimation Online');
+async function getPoses() {
+    poses = await detector.estimatePoses(video.elt);
+    setTimeout(getPoses, 0);
 }
-//#endregion
 
 //#region INTERFACE
 btnRecord.onclick = function () {
-    capture = !capture;
-    if (capture) {
+    tracking = !tracking;
+    if (tracking) {
         btnRecord.innerHTML = "STOP"
         btnRecord.style.backgroundColor = "rgba(187, 19, 62, 1)";
         footXY = [[[], []], [[], []]]
@@ -63,7 +88,7 @@ formPlot.onchange = function () {
     plotOption = formPlot.options[formPlot.selectedIndex].text;
     plotData();
 }
-//#endregion
+//#engregion
 
 //#region PLOT FUNCTIONS
 function initPlot() {
@@ -76,6 +101,7 @@ function initPlot() {
 
     // Define Layout
     var layout = {
+        autosize: true,
         title: "Foot XY"
     };
 
@@ -109,16 +135,15 @@ function plotData() {
 }
 //#endregion
 
-//#region TRACK POSES
-function trackPoses(poses) {
+//#region TRACKING
+function trackPoses() {
     frame++;
     time.push(frame);
     if (poses.length > 0) {
-        pose = poses[0].pose;
-        footXY[0][0].push(pose.rightAnkle.x)
-        footXY[0][1].push(pose.rightAnkle.y)
-        footXY[1][0].push(pose.leftAnkle.x)
-        footXY[1][1].push(pose.leftAnkle.y)
+        footXY[0][0].push(poses[0].keypoints[16].x)
+        footXY[0][1].push(poses[0].keypoints[16].y)
+        footXY[1][0].push(poses[0].keypoints[15].x)
+        footXY[1][1].push(poses[0].keypoints[15].y)
     } else {
         footXY[0][0].push(-1)
         footXY[0][1].push(-1)
@@ -126,46 +151,65 @@ function trackPoses(poses) {
         footXY[1][1].push(-1)
     }
 }
-//#endregion
 
-//#region DRAW
+//#region DRAW FUNCTIONS
 function draw() {
-    background(255)
-
-    vHeight = width * (video.height / video.width);
-    vScaleX = 0 + 1 * width / video.width;
-    vScaleY = 1 + 0 * (video.height / video.width);
-    vTop = 64;
-    vPad = (vidRes[1] - vHeight) / 2;
-    hPad = 0;//(windowWidth - width) / 2;
-    if (vPad < 0) {
-        vPad = 0;
+    if (videoready == true) {
+        if (poses == undefined) {
+            getPoses();
+        } else if (tracking == true) {
+            trackPoses();
+        }
     }
-    image(video, 0, vPad, width, vHeight);
 
-    if (pose && capture) {
-        // ADD LANDMARKS
-        fill(255, 255, 0);
-        //ellipse(vScaleX * pose.rightShoulder.x, vScaleY * pose.rightShoulder.y + vPad + vTop, szFoot);
-        //ellipse(vScaleX * pose.leftShoulder.x, vScaleY * pose.leftShoulder.y + vPad + vTop, szFoot);
-        ellipse(vScaleX * pose.leftAnkle.x + hPad, vScaleY * pose.leftAnkle.y + vPad + vTop, szFoot);
-        fill(255, 0, 0);
-        ellipse(vScaleX * pose.rightAnkle.x + hPad, vScaleY * pose.rightAnkle.y + vPad + vTop, szBody);
-        ellipse(vScaleX * pose.rightKnee.x + hPad, vScaleY * pose.rightKnee.y + vPad + vTop, szBody);
-        ellipse(vScaleX * pose.leftKnee.x + hPad, vScaleY * pose.leftKnee.y + vPad + vTop, szBody);
-        ellipse(vScaleX * pose.rightHip.x + hPad, vScaleY * pose.rightHip.y + vPad + vTop, szBody);
-        ellipse(vScaleX * pose.leftHip.x + hPad, vScaleY * pose.leftHip.y + vPad + vTop, szBody);
-        /*// ADD SEGMENTS
-        strokeWeight(2);
-        stroke(255);
-        line(pose.rightAnkle.x + hPad, pose.rightAnkle.y + vPad + vTop,
-            pose.rightKnee.x + hPad, pose.rightKnee.y + vPad + vTop);
-        line(pose.leftAnkle.x + hPad, pose.leftAnkle.y + vPad + vTop,
-            pose.leftKnee.x + hPad, pose.leftKnee.y + vPad + vTop);
-        line(pose.rightKnee.x + hPad, pose.rightKnee.y + vPad + vTop,
-            pose.rightHip.x + hPad, pose.rightHip.y + vPad + vTop);
-        line(pose.leftKnee.x + hPad, pose.leftKnee.y + vPad + vTop,
-            pose.leftHip.x + hPad, pose.leftHip.y + vPad + vTop);*/
+    background(220);
+    translate(width, 0);
+    scale(-1, 1);
+    image(video, 0, 0, video.width, video.height);
+
+    drawKeypoints();
+    drawSkeleton();
+}
+
+function drawKeypoints() {
+    var count = 0;
+    if (poses && poses.length > 0) {
+        for (let kp of poses[0].keypoints) {
+            const { x, y, score } = kp;
+            if (score > 0.3) {
+                count = count + 1;
+                fill(255);
+                stroke(0);
+                strokeWeight(4);
+                circle(x, y, 16);
+            }
+        }
+    }
+}
+
+// Draws lines between the keypoints
+function drawSkeleton() {
+    confidence_threshold = 0.5;
+
+    if (poses && poses.length > 0) {
+        for (const [key, value] of Object.entries(edges)) {
+            const p = key.split(",");
+            const p1 = p[0];
+            const p2 = p[1];
+
+            const y1 = poses[0].keypoints[p1].y;
+            const x1 = poses[0].keypoints[p1].x;
+            const c1 = poses[0].keypoints[p1].score;
+            const y2 = poses[0].keypoints[p2].y;
+            const x2 = poses[0].keypoints[p2].x;
+            const c2 = poses[0].keypoints[p2].score;
+
+            if ((c1 > confidence_threshold) && (c2 > confidence_threshold)) {
+                strokeWeight(2);
+                stroke('rgb(0, 255, 0)');
+                line(x1, y1, x2, y2);
+            }
+        }
     }
 }
 //#endregion
