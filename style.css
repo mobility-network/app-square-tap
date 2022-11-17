@@ -8,12 +8,11 @@ body {
 #app-container {
     display: grid;
     grid-template-columns: 70% 30%;
-    grid-template-rows: 5% 480px 5% 40% 5%;
+    grid-template-rows: 24px 360px 40% 5%;
     gap: 0px 0px;
     grid-template-areas:
         "pnl-head pnl-head"
-        "pnl-vid pnl-vid"
-        "pnl-input pnl-input"
+        "pnl-vid pnl-input"
         "pnl-plot pnl-score"
         "pnl-export pnl-export";
 }
@@ -35,7 +34,6 @@ body {
 #pnl-input {
     grid-area: pnl-input;
     display: flex;
-    justify-content: center;
     align-items: center;
 }
 

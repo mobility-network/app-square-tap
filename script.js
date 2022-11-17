@@ -12,6 +12,10 @@ let model;
 let tracking = false;
 let frame = 0;
 let plotOption = "Position vs Time";
+let footXY = [[], []];
+let time = [];
+const RAT = 0.75;
+let num_kp = 1;
 
 async function init() {
     const detectorConfig = {
@@ -43,29 +47,29 @@ async function videoReady() {
     await getPoses();
 }
 
+async function getPoses() {
+    poses = await detector.estimatePoses(video.elt);
+    setTimeout(getPoses, 0);
+}
+
 async function setup() {
     var constraints = {
         audio: false,
         video: {
             facingMode: {
-                exact: "environment"
+                exact: "user"
             }
         }
     }
 
-    canvas = createCanvas(640, 480);
+    canvas = createCanvas(480, 360);
     canvas.parent(canvasVid);
     video = createCapture(constraints, videoReady);
-    video.size(640, 480);
+    video.size(480, 360);
     video.hide();
 
     await init();
     initPlot();
-}
-
-async function getPoses() {
-    poses = await detector.estimatePoses(video.elt);
-    setTimeout(getPoses, 0);
 }
 
 //#region INTERFACE
@@ -74,7 +78,7 @@ btnRecord.onclick = function () {
     if (tracking) {
         btnRecord.innerHTML = "STOP"
         btnRecord.style.backgroundColor = "rgba(187, 19, 62, 1)";
-        footXY = [[[], []], [[], []]]
+        footXY = [[], []];
         time = [];
         frame = 0;
     } else {
@@ -112,23 +116,34 @@ function initPlot() {
 function plotData() {
     // Define Data
     if (plotOption == "Position vs Time") {
-        var data = [{
+        var trace1 = {
             x: time,
-            y: footXY[0][1],
-            mode: "markers"
-        }];
-    } else {
-        var data = [{
-            x: footXY[1][0],
-            y: footXY[1][1],
-            mode: "markers"
-        }];
+            y: footXY[0],
+            name: 'X',
+            mode: 'lines'
+        };
+
+        var trace2 = {
+            x: time,
+            y: footXY[1],
+            name: 'Y',
+            mode: 'lines'
+        };
+        var data = [trace1, trace2];
     }
 
     // Define Layout
     var layout = {
         autosize: true,
-        title: "Foot XY"
+        title: "Foot XY",
+        xaxis: {
+            autorange: false,
+            range: [0, frame],
+            title: 'Frame'
+        },
+        yaxis: {
+            title: 'Position'
+        }
     };
 
     // Display using Plotly
@@ -141,15 +156,11 @@ function trackPoses() {
     frame++;
     time.push(frame);
     if (poses.length > 0) {
-        footXY[0][0].push(poses[0].keypoints[16].x)
-        footXY[0][1].push(poses[0].keypoints[16].y)
-        footXY[1][0].push(poses[0].keypoints[15].x)
-        footXY[1][1].push(poses[0].keypoints[15].y)
+        footXY[0].push(poses[0].keypoints[1].x)
+        footXY[1].push(poses[0].keypoints[1].y)
     } else {
-        footXY[0][0].push(-1)
-        footXY[0][1].push(-1)
-        footXY[0][0].push(-1)
-        footXY[1][1].push(-1)
+        footXY[0].push(-1)
+        footXY[1].push(-1)
     }
 }
 
@@ -178,12 +189,19 @@ function drawKeypoints() {
         for (let kp of poses[0].keypoints) {
             const { x, y, score } = kp;
             if (score > 0.3) {
-                count = count + 1;
-                fill(255);
-                stroke(0);
-                strokeWeight(4);
-                circle(x, y, 16);
+                if (count == num_kp) {
+                    fill(255);
+                    stroke(0);
+                    strokeWeight(4);
+                    circle(x * RAT, y * RAT, 16);
+                } else {
+                    fill(255);
+                    stroke(0);
+                    strokeWeight(4);
+                    circle(x * RAT, y * RAT, 4);
+                }
             }
+            count = count + 1;
         }
     }
 }
@@ -198,11 +216,11 @@ function drawSkeleton() {
             const p1 = p[0];
             const p2 = p[1];
 
-            const y1 = poses[0].keypoints[p1].y;
-            const x1 = poses[0].keypoints[p1].x;
+            const y1 = poses[0].keypoints[p1].y * RAT;
+            const x1 = poses[0].keypoints[p1].x * RAT;
             const c1 = poses[0].keypoints[p1].score;
-            const y2 = poses[0].keypoints[p2].y;
-            const x2 = poses[0].keypoints[p2].x;
+            const y2 = poses[0].keypoints[p2].y * RAT;
+            const x2 = poses[0].keypoints[p2].x * RAT;
             const c2 = poses[0].keypoints[p2].score;
 
             if ((c1 > confidence_threshold) && (c2 > confidence_threshold)) {
