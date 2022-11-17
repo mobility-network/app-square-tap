@@ -7,7 +7,7 @@ body {
 #app-container {
     display: grid;
     grid-template-columns: 70% 30%;
-    grid-template-rows: 5% 480px 5% 40% 5%;
+    grid-template-rows: 5% 240px 5% 360px 5%;
     gap: 0px 0px;
     grid-template-areas:
         "pnl-head pnl-head"
@@ -49,7 +49,7 @@ body {
     grid-area: pnl-plot;
     display: grid;
     grid-template-columns: 100%;
-    grid-template-rows: 10% 320px;
+    grid-template-rows: 10% 240px;
     gap: 0px 0px;
     grid-template-areas:
         "plt-form"

@@ -53,10 +53,10 @@ async function setup() {
         }
     }
 
-    canvas = createCanvas(640, 480);
+    canvas = createCanvas(360, 240);
     canvas.parent(canvasVid);
     video = createCapture(constraints, videoReady);
-    video.size(640, 480);
+    video.size(360, 240);
     video.hide();
 
     await init();
