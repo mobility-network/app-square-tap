@@ -48,15 +48,15 @@ async function setup() {
         audio: false,
         video: {
             facingMode: {
-                exact: "environment"
+                exact: "user"
             }
         }
     }
 
-    canvas = createCanvas(360, 240);
+    canvas = createCanvas(640, 480);
     canvas.parent(canvasVid);
     video = createCapture(constraints, videoReady);
-    video.size(360, 240);
+    video.size(640, 480);
     video.hide();
 
     await init();
