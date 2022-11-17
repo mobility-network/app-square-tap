@@ -21,7 +21,7 @@ const CYCRAD = 50;
 const RAT = 0.65;
 const DEF_RES = [640, 480];
 const ADJ_RES = [DEF_RES[0] * RAT, DEF_RES[1] * RAT];
-let num_kp = 1;
+let num_kp = 15;
 
 async function init() {
     const detectorConfig = {
@@ -99,12 +99,12 @@ btnRecord.onclick = function () {
 }
 
 btnFootR.onclick = function () {
-    num_kp = 2;
+    num_kp = 16;
     btnFootR.classList.add('btn-active');
     btnFootL.classList.remove('btn-active');
 }
 btnFootL.onclick = function () {
-    num_kp = 1;
+    num_kp = 15;
     btnFootR.classList.remove('btn-active');
     btnFootL.classList.add('btn-active');
 }
