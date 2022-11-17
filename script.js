@@ -1,7 +1,9 @@
 const btnRecord = document.getElementById("btn-record")
+const btnFootR = document.getElementById("btn-right")
+const btnFootL = document.getElementById("btn-left")
 const canvasVid = document.getElementById("canvas-video")
 const canvasPlot = document.getElementById("canvas-plot")
-const formPlot = document.getElementById("form-plot")
+const lblCount = document.getElementById("lbl-count")
 let detector;
 let detectorConfig;
 let poses;
@@ -9,12 +11,16 @@ let video;
 let videoready = false;
 let skeleton = true;
 let model;
+let newCycle = false;
 let tracking = false;
 let frame = 0;
-let plotOption = "Position vs Time";
-let footXY = [[], []];
+let num_cycles = 0;
+let keypointXY = [[], []];
 let time = [];
-const RAT = 0.75;
+const CYCRAD = 50;
+const RAT = 0.65;
+const DEF_RES = [640, 480];
+const ADJ_RES = [DEF_RES[0] * RAT, DEF_RES[1] * RAT];
 let num_kp = 1;
 
 async function init() {
@@ -57,15 +63,15 @@ async function setup() {
         audio: false,
         video: {
             facingMode: {
-                exact: "user"
+                exact: "environment"
             }
         }
     }
 
-    canvas = createCanvas(480, 360);
+    canvas = createCanvas(ADJ_RES[0], ADJ_RES[1]);
     canvas.parent(canvasVid);
     video = createCapture(constraints, videoReady);
-    video.size(480, 360);
+    video.size(ADJ_RES[0], ADJ_RES[1]);
     video.hide();
 
     await init();
@@ -77,22 +83,32 @@ btnRecord.onclick = function () {
     tracking = !tracking;
     if (tracking) {
         btnRecord.innerHTML = "STOP"
-        btnRecord.style.backgroundColor = "rgba(187, 19, 62, 1)";
-        footXY = [[], []];
+        btnRecord.classList.add('btn-rec-stop');
+        keypointXY = [[], []];
         time = [];
         frame = 0;
+
+        num_cycles = 0;
+        newCycle = false;
+        lblCount.innerHTML = "Cycles: " + num_cycles;
     } else {
         btnRecord.innerHTML = "START"
-        btnRecord.style.backgroundColor = "rgba(28, 153, 109, 1)";
+        btnRecord.classList.remove('btn-rec-stop');
         plotData()
     }
 }
 
-formPlot.onchange = function () {
-    plotOption = formPlot.options[formPlot.selectedIndex].text;
-    plotData();
+btnFootR.onclick = function () {
+    num_kp = 2;
+    btnFootR.classList.add('btn-active');
+    btnFootL.classList.remove('btn-active');
 }
-//#engregion
+btnFootL.onclick = function () {
+    num_kp = 1;
+    btnFootR.classList.remove('btn-active');
+    btnFootL.classList.add('btn-active');
+}
+//#endregion
 
 //#region PLOT FUNCTIONS
 function initPlot() {
@@ -105,8 +121,10 @@ function initPlot() {
 
     // Define Layout
     var layout = {
-        autosize: true,
-        title: "Foot XY"
+        autosize: false,
+        height: 300,
+        width: 500,
+        title: "Foot XY-Time"
     };
 
     // Display using Plotly
@@ -115,27 +133,27 @@ function initPlot() {
 
 function plotData() {
     // Define Data
-    if (plotOption == "Position vs Time") {
-        var trace1 = {
-            x: time,
-            y: footXY[0],
-            name: 'X',
-            mode: 'lines'
-        };
+    var trace1 = {
+        x: time,
+        y: keypointXY[0],
+        name: 'X',
+        mode: 'lines'
+    };
 
-        var trace2 = {
-            x: time,
-            y: footXY[1],
-            name: 'Y',
-            mode: 'lines'
-        };
-        var data = [trace1, trace2];
-    }
+    var trace2 = {
+        x: time,
+        y: keypointXY[1],
+        name: 'Y',
+        mode: 'lines'
+    };
+    var data = [trace1, trace2];
 
     // Define Layout
     var layout = {
-        autosize: true,
-        title: "Foot XY",
+        autosize: false,
+        height: 300,
+        width: 500,
+        title: "Foot XY-Time",
         xaxis: {
             autorange: false,
             range: [0, frame],
@@ -156,11 +174,30 @@ function trackPoses() {
     frame++;
     time.push(frame);
     if (poses.length > 0) {
-        footXY[0].push(poses[0].keypoints[1].x)
-        footXY[1].push(poses[0].keypoints[1].y)
+        kpX = poses[0].keypoints[num_kp].x;
+        kpY = poses[0].keypoints[num_kp].y;
+        keypointXY[0].push(kpX)
+        keypointXY[1].push(kpY)
+
+        testCycle(kpX, kpY)
     } else {
-        footXY[0].push(-1)
-        footXY[1].push(-1)
+        keypointXY[0].push(-1)
+        keypointXY[1].push(-1)
+    }
+}
+
+function testCycle(x, y) {
+    let dX = x - keypointXY[0][0];
+    let dY = y - keypointXY[1][0];
+    let dist = Math.sqrt(dX * dX + dY * dY);
+
+    if (dist > CYCRAD) {
+        newCycle = true;
+    }
+    if (dist < CYCRAD && newCycle) {
+        num_cycles++;
+        lblCount.innerHTML = "Cycles: " + num_cycles;
+        newCycle = false;
     }
 }
 
@@ -179,8 +216,16 @@ function draw() {
     //scale(-1, 1);
     image(video, 0, 0, video.width, video.height);
 
+    drawStartPoint();
     drawKeypoints();
     drawSkeleton();
+}
+
+function drawStartPoint() {
+    fill(0, 0, 0, 0);
+    stroke(255, 0, 0);
+    strokeWeight(4);
+    circle(keypointXY[0][0] * RAT, keypointXY[1][0] * RAT, CYCRAD);
 }
 
 function drawKeypoints() {

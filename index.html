@@ -20,20 +20,22 @@
 </head>
 
 <body>
+    <div id="pnl-head">
+        <div id="txt-head">SQUARE TAPPING TASK</div>
+    </div>
+    <div class="spacer"></div>
     <div id="app-container">
-        <div id="pnl-head">
-            <div id="txt-head">SQUARE TAPPING TASK</div>
-        </div>
         <div id="pnl-vid">
             <div id="canvas-video"></div>
         </div>
         <div id="pnl-input">
+            <div id="lbl-foot">Choose foot to track</div>
+            <button id="btn-right">R</button>
+            <button id="btn-left" class="btn-active">L</button>
             <button id="btn-record">START</button>
+            <div id="lbl-count">Cycles: __</div>
         </div>
         <div id="pnl-plot">
-            <select class="dropdown" id="form-plot">
-                <option value="1" selected="selected">Position vs Time</option>
-            </select>
             <div id="canvas-plot"></div>
         </div>
         <div id="pnl-score">SCORE</div>
