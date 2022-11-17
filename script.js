@@ -164,8 +164,8 @@ function draw() {
     }
 
     background(220);
-    translate(width, 0);
-    //    scale(-1, 1);
+    translate(0, 0);
+    //scale(-1, 1);
     image(video, 0, 0, video.width, video.height);
 
     drawKeypoints();
