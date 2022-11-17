@@ -127,6 +127,7 @@ function plotData() {
 
     // Define Layout
     var layout = {
+        autosize: true,
         title: "Foot XY"
     };
 
