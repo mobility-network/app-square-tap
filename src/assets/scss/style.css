@@ -1,0 +1,18 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+@media screen and (orientation: portrait) {
+    body {
+        transform: rotate(90deg);
+    }
+}
+
+@media screen and (orientation: landscape) {
+    body {
+        transform: rotate(0deg);
+    }
+}

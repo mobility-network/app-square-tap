@@ -1,0 +1,220 @@
+:root {
+    --grey0: #2e353d;
+    --grey1: #353c45;
+    --grey2: #444b53;
+    --grey3: #686c73;
+    --grey4: #8c939c;
+    --grey5: #c2c8cf;
+    --grey6: #eeeeee;
+    --grey7: #ffffff;
+    --yellow1: #ddbd04;
+    --yellow2: #f39212;
+    --orange: #d86e0b;
+    --red0: #da626c;
+    --red1: #f04150;
+    --red2: #a71919;
+    --blue1: #1963a8;
+    --blue2: #082a50;
+    --blue3: #061629;
+    --green1: #32e67d;
+    --green2: #157c74;
+    --purple1: #9c27b0;
+    --purple2: #5727b0;
+    --slate1: #95a6bf;
+    --slate2: #6e829a;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-family: monospace;
+}
+
+/*button {
+    font-family: monospace;
+    color: #090909;
+    padding: 0.7em 1.7em;
+    font-size: 18px;
+    border-radius: 0.5em;
+    background: #e8e8e8;
+    border: 1px solid #e8e8e8;
+    transition: all .3s;
+    box-shadow: 2px 2px 8px #c5c5c5,
+        -6px -6px 8px #ffffff;
+}
+
+button:hover {
+    border: 1px solid white;
+}
+
+button:active {
+    box-shadow: 4px 4px 8px #c5c5c5,
+        -4px -4px 8px #ffffff;
+}*/
+
+#tab-capture {
+    visibility: hidden;
+}
+
+#app-container {
+    display: grid;
+    width: 100%;
+    justify-content: space-around;
+    grid-template-columns: 60% 36%;
+    grid-template-rows: 340px 340px 5%;
+    gap: 8px 2%;
+    grid-template-areas:
+        "pnl-vid pnl-input"
+        "pnl-plot pnl-score"
+        "pnl-export pnl-export";
+}
+
+#pnl-head {
+    grid-area: pnl-head;
+    height: 24px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-family: monospace;
+    color: whitesmoke;
+    background-color: var(--blue2);
+    box-shadow: 3px 4px 9px 0px rgba(189, 189, 189, 1);
+}
+
+#pnl-vid {
+    grid-area: pnl-vid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--grey7);
+    border-style: solid;
+    border-radius: 8px;
+    border-width: 2px;
+    border-color: var(--grey6);
+    box-shadow: 3px 4px 9px 0px rgba(189, 189, 189, 1);
+}
+
+#pnl-input {
+    grid-area: pnl-input;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 5% 20% 50% 25%;
+    gap: 16px 4px;
+    grid-template-areas:
+        "inp-lbl-foot inp-lbl-foot"
+        "inp-left inp-right"
+        "inp-start inp-start"
+        "inp-count inp-count";
+    background-color: var(--grey7);
+    border-style: solid;
+    border-radius: 8px;
+    border-width: 2px;
+    border-color: var(--grey6);
+    box-shadow: 3px 4px 9px 0px rgba(189, 189, 189, 1);
+    padding: 5%;
+}
+
+#pnl-score {
+    grid-area: pnl-score;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--grey7);
+    border-style: solid;
+    border-radius: 8px;
+    border-width: 2px;
+    border-color: var(--grey6);
+    box-shadow: 3px 4px 9px 0px rgba(189, 189, 189, 1);
+}
+
+#pnl-plot {
+    grid-area: pnl-plot;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--grey7);
+    border-style: solid;
+    border-radius: 8px;
+    border-width: 2px;
+    border-color: var(--grey6);
+    box-shadow: 3px 4px 9px 0px rgba(189, 189, 189, 1);
+}
+
+#pnl-export {
+    grid-area: pnl-export;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+#canvas-plot {
+    grid-area: plt-canvas;
+}
+
+#form-plot {
+    grid-area: plt-form;
+}
+
+#canvas-video {
+    background-color: grey;
+}
+
+#btn-record {
+    grid-area: inp-start;
+}
+
+#lbl-foot {
+    grid-area: inp-lbl-foot;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#btn-right {
+    grid-area: inp-right;
+}
+
+#btn-left {
+    grid-area: inp-left;
+}
+
+#lbl-count {
+    grid-area: inp-count;
+    display: flex;
+    justify-content: center;
+}
+
+.spacer {
+    height: 8px;
+}
+
+.btn-rec-stop {
+    color: whitesmoke;
+    background-color: var(--red2);
+}
+
+.btn-active {
+    color: whitesmoke;
+    background-color: var(--blue2);
+    border-color: var(--blue1);
+    border-style: solid;
+    border-width: 2px;
+}
+
+@media screen and (orientation: portrait) {
+    body {
+        transform: rotate(90deg);
+    }
+}
+
+@media screen and (orientation: landscape) {
+    body {
+        transform: rotate(0deg);
+    }
+}

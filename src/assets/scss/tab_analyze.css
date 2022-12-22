@@ -1,0 +1,11 @@
+#canvas-plot {
+    width: 640px;
+    height: 480px;
+}
+
+@media screen and (max-width: 900px) {
+    #canvas-plot {
+        width: 418px;
+        height: 312px;
+    }
+}

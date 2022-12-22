@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="./assets/scss/main.css">
+    <link rel="stylesheet" href="./assets/scss/style.css">
+    <link rel="stylesheet" href="./assets/scss/tab_capture.css">
+    <link rel="stylesheet" href="./assets/scss/tab_analyze.css">
+    <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+    <meta charset="utf-8" />
+</head>
+
+<body>
+    <div class="container my-1 shadow-sm">
+        <nav class="nav nav-pills nav-fill sticky-top bg-light" id="nav-tab" role="tablist">
+            <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home"
+                type="button" role="tab" aria-controls="nav-home" aria-selected="true">Start</button>
+
+            <button class="nav-link disabled" id="nav-capture-tab" data-bs-toggle="tab" data-bs-target="#nav-capture"
+                type="button" role="tab" aria-controls="nav-capture" aria-selected="false">Capture</button>
+
+            <button class="nav-link disabled" id="nav-analyze-tab" data-bs-toggle="tab" data-bs-target="#nav-analyze"
+                type="button" role="tab" aria-controls="nav-analyze" aria-selected="false">Analyze</button>
+        </nav>
+    </div>
+
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade p-1 active show" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+            <div class="container d-flex card text-bg-light shadow" id="app-container">
+                <div class="row mt-3">
+                    <div class="col-sm-6">
+                        <div class="card text-white bg-primary mb-3">
+                            <div class="card-header">The Square Tapping Task</div>
+                            <div class="card-body">
+                                <h5 class="card-title">Welcome!</h5>
+                                <p class="card-text">Add introductory blurb & instructions here.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="card bg-light mb-3">
+                            <div class="card-header">Getting Started</div>
+                            <div class="card-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="inputName">Full Name:</label>
+                                        <input type="text" class="form-control" id="inputName" placeholder="First Last">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputInstitution">Institution:</label>
+                                        <input type="text" class="form-control" id="inputInstitution"
+                                            placeholder="e.g. University of Toronto">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputRole">Role:</label>
+                                        <input type="text" class="form-control" id="inputRole"
+                                            placeholder="e.g. Therapist">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inputRole">Participant ID:</label>
+                                        <input type="text" class="form-control" id="inputRole"
+                                            placeholder="e.g. Name or ID #">
+                                    </div>
+                                </form>
+                                <div class="row p-3 gy-2">
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                        data-bs-target="#consentModal" id="btn-consent-trigger">
+                                        Informed Consent
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade p-1" id="nav-capture" role="tabpanel" aria-labelledby="nav-capture-tab">
+            <div class="container d-flex card text-bg-light shadow" id="app-container" style="height: 85vh;">
+                <div class="row my-auto">
+                    <div class="col-auto my-auto">
+                        <div class="shadow-sm">
+                            <div id="canvas-video" style="background-color: darkgrey;"></div>
+                        </div>
+                    </div>
+                    <div class="col my-auto">
+                        <div class="card text-center my-3">
+                            <div class="card-header text-light bg-primary">Choose foot to track:</div>
+                            <div class="card-body text-primary">
+                                <div class="btn-group">
+                                    <button class="btn btn-outline-primary active" id="btn-left">LEFT</button>
+                                    <button class="btn btn-outline-primary" id="btn-right">RIGHT</button>
+                                </div>
+                                <button id="btn-record" class="btn btn-dark">START</button>
+                            </div>
+                        </div>
+                        <div class="card text-center">
+                            <div class="card-header text-light bg-primary">Cycles Completed:</div>
+                            <div class="card-body text-primary">
+                                <h1 class="card-title" id="lbl-count">0</h1>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade p-1" id="nav-analyze" role="tabpanel" aria-labelledby="nav-analyze-tab">
+            <div class="container d-flex card text-bg-light shadow" id="app-container">
+                <div class="row p-2 my-auto">
+                    <div class="col my-auto">
+                        <div class="shadow-sm" id="canvas-plot"></div>
+                    </div>
+                    <div class="col my-auto">
+                        <div class="card m-2 border-primary text-center">
+                            <div class="card-header text-light bg-primary">Score:</div>
+                            <div class="card-body text-primary">
+                                <h1 class="card-title">0</h1>
+                            </div>
+                        </div>
+                        <div class="card m-2 border-primary text-center">
+                            <div class="card-header text-light bg-primary">Cycles Completed:</div>
+                            <div class="card-body text-primary">
+                                <h1 class="card-title">0</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row p-3">
+                    <button id="btn-export" class="btn btn-dark">EXPORT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="consentModal" tabindex="-1" aria-labelledby="consentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="consentModalLabel">Informed Consent</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Add informed consent here.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal"
+                        id="btn-consent">Accept</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script src="./assets/js/tab_home.js"></script>
+<script src="./assets/js/main.js"></script>
+<!-- Require the peer dependencies of pose-detection. -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+<!-- You must explicitly require a TF.js backend if you're not using the TF.js union bundle. -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+<!-- Alternatively you can use the WASM backend: <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm/dist/tf-backend-wasm.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
+
+</html>
